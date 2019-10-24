@@ -1,0 +1,154 @@
+
+import org.w3c.dom.*;
+import org.xml.sax.SAXException;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Scanner;
+
+public class ReadNewXMLFile {
+	   static Scanner scan = new Scanner(System.in);
+	   static ArrayList<Sportsman> sportlist = new ArrayList<>();
+	   static String fname = "sportxml"; 
+	   static String filename ="newsportxml";
+	    public static void main(String[] args) throws ParserConfigurationException, IOException, SAXException {
+	   // 	punkt2();
+	   // 	punkt3();
+	    	punkt4();
+	   //	punkt5();
+	    }
+	    public static void punkt2() throws SAXException , IOException , ParserConfigurationException  {
+	        try {
+	            Document document = newDoc(fname);
+	            Node root = document.getDocumentElement();
+	            NodeList nList = root.getChildNodes();
+	            for (int temp = 0; temp < nList.getLength(); temp++) {
+	            String name="";
+	            String birth="";
+	            String gend="";
+	                Node nNode = nList.item(temp);
+	                if(nNode.hasAttributes()){
+	                    name=nNode.getAttributes().getNamedItem("name").getTextContent();
+	                    birth=nNode.getAttributes().getNamedItem("birthday").getTextContent();
+	                    gend=nNode.getAttributes().getNamedItem("s").getTextContent();
+	                }
+	                Sportsman sportsman = new Sportsman(name,birth,gend);
+	                sportlist.add(sportsman);
+	                NodeList nodeList = nNode.getChildNodes();
+	                for (int i = 0; i < nodeList.getLength(); i++) {
+	                    Node node1 = nodeList.item(i);
+	                    if(node1.getNodeType() == Node.ELEMENT_NODE && node1.hasAttributes()){
+	                        Element eElement = (Element) node1;
+	                        sportsman.addYear(Integer.parseInt(node1.getAttributes().getNamedItem("year").getTextContent()));
+	                        sportsman.addPlace(node1.getAttributes().getNamedItem("place").getTextContent());
+	                        sportsman.addResult(Integer.parseInt(eElement.getElementsByTagName("result").item(0).getTextContent()));
+	                        sportsman.addAward(eElement.getElementsByTagName("award").item(0).getTextContent());
+	                    }
+	                }
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    public static void punkt3() throws SAXException, IOException, ParserConfigurationException{
+	    	punkt2();
+	        for (Sportsman value :sportlist) {
+	            if (value.getGender().equals("м")) {
+	            	System.out.println("Выводим имена и даты рождения  всех мужчин");
+	                System.out.println(value.getName() + "  " + value.getBirthday()); } }
+	        for (Sportsman value:sportlist) {
+	            if (value.getGender().equals("ж") &&
+	            		Integer.parseInt(value.getBirthday().substring(0, 4))>1985) {
+	                int j=0;
+	                System.out.println("Выводим имена, даты рождения и количество медалей у женщин, старше 1985 года");
+	                while (!value.getAward(j).equals("-1"))
+	                j++;
+	                System.out.println(value.getName());
+	                System.out.println(value.getBirthday());
+	                System.out.println(j); }
+	        }
+	        for (Sportsman sportsman:sportlist) {
+	            int j = 0;
+	            while (sportsman.getYear(j)!= -1) {
+	                if (sportsman.getYear(j)==2002 &&
+	                		sportsman.getPlace(j).equals("москва")) {
+	                	System.out.println("Выводим имена и результаты спортсменов, участвовавших в 2002 году в Москве");
+	                    System.out.println(sportsman.getName());
+	                    System.out.println(sportsman.getResult(j)); }
+	                j++; }
+	        }
+	    }
+	    public static void punkt4(){
+	        String name = "";
+	        String birth = "";
+	        String gender = "";
+	        System.out.println("Введите данные спортсмена");
+	        System.out.println("Имя " );
+	        name=scan.next();
+	        System.out.println("Дата рождения(гггг-мм-дд) " );
+	        birth=scan.next();
+	        System.out.println("Пол ж или м " );
+	        gender=scan.next();
+	        Sportsman sportsman = new Sportsman(name,birth,gender);
+	        System.out.println("Количество соревнований ");
+	        int kolvo=scan.nextInt();
+	      for (int i = 0; i < kolvo; i++) {
+	        System.out.print("Место ");
+	        sportsman.addPlace(scan.next());
+	        System.out.println("Год " );
+	        sportsman.addYear(scan.nextInt());
+	        System.out.println("Результат " );
+	        sportsman.addResult(scan.nextInt());
+	        System.out.println("Медаль " );
+	        sportsman.addAward(scan.next()); }
+	    }
+	    public static void punkt5() throws ParserConfigurationException, IOException, SAXException{
+	        try {
+	            Document document =  newDoc(fname);
+	            Document document_new  = newDoc();
+	            Element rootElement = document_new.createElement("Sportsmen");
+	            document_new.appendChild(rootElement);
+	            Node root = document.getDocumentElement();
+	            NodeList nList = root.getChildNodes();
+	            for (int temp = 0; temp < nList.getLength(); temp++) {
+	                Node nNode = nList.item(temp);
+	                punkt2();
+	                Sportsman sportsman=sportlist.get(temp);
+	                int summa=0;
+	                int k=0;
+	                while (sportsman.getResult(k)!=-1){
+	                    summa+=sportsman.getResult(k);
+	                    k++; }
+	                Element eElement = document_new.createElement("Sportsman");
+	                Element eElement1 = document_new.createElement("events");
+	                Element eElement2 = document_new.createElement("results");
+	                eElement2.appendChild(document_new.createTextNode(String.valueOf(summa)));
+	                eElement1.setAttribute("number", String.valueOf(k));
+	                eElement1.appendChild(eElement2);
+	                if (nNode.hasAttributes()) {
+	                    eElement.setAttribute("name", nNode.getAttributes().getNamedItem("name").getTextContent());
+	                    eElement.appendChild(eElement1);
+	                    rootElement.appendChild(eElement);
+	                } 
+	            }
+	            Transformer transformer = TransformerFactory.newInstance().newTransformer();
+	            transformer.setOutputProperty(OutputKeys.INDENT,"yes");
+	            DOMSource source = new DOMSource(document_new);
+	            StreamResult file = new StreamResult(new File(filename));
+	            transformer.transform(source,file);
+	        } catch (TransformerException e) {
+	            e.printStackTrace();
+	        }
+	    }
+	    public static Document newDoc() throws ParserConfigurationException {
+	        return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
+	    }
+	    public static Document newDoc(String string) throws ParserConfigurationException, IOException, SAXException {
+	        return DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(string);
+	    }
+	}
