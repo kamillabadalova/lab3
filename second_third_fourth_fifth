@@ -57,27 +57,27 @@ public class ReadNewXMLFile {
 	    }
 	    public static void punkt3() throws SAXException, IOException, ParserConfigurationException{
 	    	punkt2();
+		System.out.println("Выводим имена и даты рождения  всех мужчин");
 	        for (Sportsman value :sportlist) {
 	            if (value.getGender().equals("м")) {
-	            	System.out.println("Выводим имена и даты рождения  всех мужчин");
 	                System.out.println(value.getName() + "  " + value.getBirthday()); } }
+	       System.out.println("Выводим имена, даты рождения и количество медалей женщин, старше 1985 года");
 	        for (Sportsman value:sportlist) {
 	            if (value.getGender().equals("ж") &&
 	            		Integer.parseInt(value.getBirthday().substring(0, 4))>1985) {
 	                int j=0;
-	                System.out.println("Выводим имена, даты рождения и количество медалей у женщин, старше 1985 года");
 	                while (!value.getAward(j).equals("-1"))
 	                j++;
 	                System.out.println(value.getName());
 	                System.out.println(value.getBirthday());
 	                System.out.println(j); }
 	        }
+		System.out.println("Выводим имена и результаты спортсменов, участвовавших в 2002 году в Москве");
 	        for (Sportsman sportsman:sportlist) {
 	            int j = 0;
 	            while (sportsman.getYear(j)!= -1) {
 	                if (sportsman.getYear(j)==2002 &&
 	                		sportsman.getPlace(j).equals("москва")) {
-	                	System.out.println("Выводим имена и результаты спортсменов, участвовавших в 2002 году в Москве");
 	                    System.out.println(sportsman.getName());
 	                    System.out.println(sportsman.getResult(j)); }
 	                j++; }
